@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css?family=Creepster");
+@import url("https://fonts.googleapis.com/css?family=Roboto+Mono");
+
+html, body {
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+canvas {
+  background-image: url("https://your-custom-background-image-url"); /* Replace with your custom background image URL */
+  background-color: #000000; /* Replace with your custom background color */
+  background-size: cover; /* You can also use values like "contain" or specific dimensions like "800px 600px" */
+  background-repeat: no-repeat; /* Use "repeat" if you want your background image to repeat */
+}
