@@ -54,6 +54,7 @@ function startGame () {
   }, MAX_FIRE_RATE / player.fireRate);
 }
 startGame();
+
 //movement control and shooting control
 window.addEventListener('keydown', function(e) {
   keys[e.key] = true;
@@ -74,6 +75,49 @@ restartButton.addEventListener('click', function() {
   // Restart the game loop
   gameLoop();
 });
+
+
+
+let trees = []; // Array to store the tree elements
+
+
+  function createTree() {
+    // Create the 'wood' part of the tree
+    let wood = document.createElement('div');
+    wood.className = 'wood';
+    wood.style.width = '10px';
+    wood.style.height = '20px';
+    wood.style.backgroundColor = 'brown';
+    wood.style.position = 'absolute';
+
+    // Create the 'leaves' part of the tree
+    let leaves = document.createElement('div');
+    leaves.className = 'leaves';
+    leaves.style.width = '50px';
+    leaves.style.height = '50px';
+    leaves.style.backgroundColor = 'green';
+    leaves.style.position = 'absolute';
+
+    // Position the tree at a random location within the viewport
+    let x = Math.random() * window.innerWidth;
+    let y = Math.random() * window.innerHeight;
+    wood.style.left = x + 'px';
+    wood.style.top = (y + 50) + 'px'; // Position the wood 50px below the leaves
+    leaves.style.left = (x - 20) + 'px'; // Center the leaves over the wood
+    leaves.style.top = y + 'px';
+
+    // Append the 'wood' and 'leaves' to the body
+    document.body.appendChild(wood);
+    document.body.appendChild(leaves);
+
+    trees.push({wood, leaves});
+}
+
+// Create 10 trees
+for (let i = 0; i < 10; i++) {
+    createTree();
+}
+
 
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -101,15 +145,12 @@ function gameLoop() {
   ctx.fillStyle = 'green';
   ctx.fillRect(x, y, barWidth * healthPercent, barHeight);
 
-
-
   // Create new zombies
   if (Math.random() < zombieSpawnRate) {
     let angle = Math.random() * Math.PI * 2; // Random angle
     let distance = 500; // Distance from the player
     let x = player.x + Math.cos(angle) * distance;
     let y = player.y + Math.sin(angle) * distance;
-
     hoard.push({ x: x, y: y, speed: 1, radius: 10});
   }
 
