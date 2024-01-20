@@ -11,12 +11,16 @@ window.addEventListener('resize', function() {
   canvas.height = window.innerHeight;
 });
 
-let player = { x: 400, y: 300, speed: 4 };
+// Game variables
+let player = { x: 400, y: 300, speed: 1 };
+let playerMaxSpeed = 5;
+let zombieSpawnRate = 0.01;
 let zombies = [];
 let bullets = [];
 let mouse = { x: 0, y: 0 };
 let keys = {};
 
+// WASD Player Movement
 window.addEventListener('keydown', function(e) {
   keys[e.key] = true;
 });
@@ -30,12 +34,23 @@ canvas.addEventListener('mousemove', function(e) {
   mouse.y = e.clientY;
 });
 
+// Adjusted for canvas position
 canvas.addEventListener('click', function() {
-  bullets.push({ x: player.x, y: player.y, speed: 5, angle: Math.atan2(mouse.y - player.y, mouse.x - player.x) });
+  let dx = mouse.x - canvas.width / 2;
+  let dy = mouse.y - canvas.height / 2;
+  let angle = Math.atan2(dy, dx);
+  bullets.push({ x: player.x, y: player.y, speed: 5, angle: angle });
 });
 
 function gameLoop() {
+  // Clear the entire canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Save the state of the canvas
+  ctx.save();
+
+  // Translate the canvas to the player's location
+  ctx.translate(-player.x + canvas.width / 2, -player.y + canvas.height / 2);
 
   // Move player based on keys
   if (keys['w'] || keys['W']) player.y -= player.speed;
@@ -43,15 +58,37 @@ function gameLoop() {
   if (keys['a'] || keys['A']) player.x -= player.speed;
   if (keys['d'] || keys['D']) player.x += player.speed;
 
-
   // Draw player
   ctx.beginPath();
   ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
   ctx.fill();
 
   // Create new zombies
-  if (Math.random() < 0.01) {
-    zombies.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, speed: 1 });
+  if (Math.random() < zombieSpawnRate) {
+    let side = Math.floor(Math.random() * 4); // 0: top, 1: right, 2: bottom, 3: left
+    let x, y;
+    let offset = 200; // Increase this value to spawn zombies further away
+  
+    switch (side) {
+      case 0: // top
+        x = player.x + Math.random() * canvas.width - canvas.width / 2;
+        y = player.y - offset;
+        break;
+      case 1: // right
+        x = player.x + canvas.width + offset;
+        y = player.y + Math.random() * canvas.height - canvas.height / 2;
+        break;
+      case 2: // bottom
+        x = player.x + Math.random() * canvas.width - canvas.width / 2;
+        y = player.y + canvas.height + offset;
+        break;
+      case 3: // left
+        x = player.x - offset;
+        y = player.y + Math.random() * canvas.height - canvas.height / 2;
+        break;
+    }
+  
+    zombies.push({ x: x, y: y, speed: 1 });
   }
 
   // Move and draw zombies
@@ -92,6 +129,9 @@ function gameLoop() {
       }
     }
   }
+
+  // Restore the state of the canvas
+  ctx.restore();
 
   requestAnimationFrame(gameLoop);
 }
