@@ -100,7 +100,6 @@ function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 
-  
   // Move player based on keys
   if (keys['w'] || keys['W']) player.y -= player.speed;
   if (keys['s'] || keys['S']) player.y += player.speed;
