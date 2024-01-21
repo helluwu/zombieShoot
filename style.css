@@ -2,16 +2,80 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto+Mono");
 
 html, body {
-  html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-  }
+    overflow: hidden;
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/*permits background image to be darker when dead*/
+#overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0.5;
+}
+
+/*WASTED text*/
+#over{
+  font-family: 'Creepster', cursive;
+  font-size: 50px;
+  color: rgb(126, 0, 128);
+  text-shadow: 0 0 5px rgb(204, 16, 141);
+  text-align: center;
+  display: inline-block;
+  position: relative;
+  letter-spacing: 5px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+
+#restartButton {
+  margin-top: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #dd70b5;
+  border-radius: 100px;
+  box-shadow: rgba(255, 102, 102, 0.2) 0 -25px 18px -14px inset,rgba(255, 102, 102, .15) 0 1px 2px,rgba(255, 102, 102, .15) 0 2px 4px,rgba(255, 102, 102, .15) 0 4px 8px,rgba(255, 102, 102, .15) 0 8px 16px,rgba(255, 102, 102, .15) 0 16px 32px;
+  color: rgb(126, 0, 128);
+  cursor: pointer;
+  display: inline-block;
+  font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
+  padding: 14px 40px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 250ms;
+  border: 0;
+  font-size: 20px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+#restartbutton:hover {
+  transform: scale(1.05) rotate(-1deg);
 }
 
 canvas {
-  background-image: url("https://your-custom-background-image-url"); /* Replace with your custom background image URL */
-  background-color: #000000; /* Replace with your custom background color */
+  background-image: url("/imgs/cover.jpg");
   background-size: cover; /* You can also use values like "contain" or specific dimensions like "800px 600px" */
   background-repeat: no-repeat; /* Use "repeat" if you want your background image to repeat */
 }
