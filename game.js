@@ -97,7 +97,6 @@ restartButton.addEventListener('click', function() {
   gameLoop();
 });
 
-<<<<<<< HEAD
 
 
 let trees = []; // Array to store the tree elements
@@ -141,9 +140,6 @@ for (let i = 0; i < 10; i++) {
 }
 
 
-=======
-// Game Tick
->>>>>>> 3a6ea9e (exp)
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -182,9 +178,6 @@ function gameLoop() {
     let distance = 500; // Distance from the player
     let x = player.x + Math.cos(angle) * distance;
     let y = player.y + Math.sin(angle) * distance;
-<<<<<<< HEAD
-    hoard.push({ x: x, y: y, speed: 1, radius: 10});
-=======
     let z = {
       x: x,
       y: y,
@@ -194,7 +187,6 @@ function gameLoop() {
       radius: zombie.radius,
     }
     hoard.push(z);
->>>>>>> 3a6ea9e (exp)
   }
 
   // Move and draw zombies
