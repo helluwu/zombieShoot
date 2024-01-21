@@ -65,7 +65,7 @@ html, body {
 #restartButton, #startButton {
   margin-top: 20px;
   position: absolute;
-  top: 50%;
+  top: 70%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: #dd70b5;
