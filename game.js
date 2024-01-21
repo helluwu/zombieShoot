@@ -23,7 +23,6 @@ let mouse;
 let keys;
 let shootingInterval1;
 let shootingInterval2;
-let medkits;
 let killCount = 0;
 
 
@@ -33,10 +32,6 @@ let MAX_FIRE_RATE = 200;
 let MAX_ZOMBIE_SPAWN_RATE = 0.05;
 let MAX_ZOMBIE_SPEED = 2;
 let MAX_ZOMBIE_HP = 100;
-
-let SPAWN_MEDKIT_RATE = 0.01;
-let SPAWN_SPEED_BOOST_RATE = 0.01;
-let SPAWN_FIRE_RATE_BOOST_RATE = 0.01;
 
 // xp bar variables
 let maxExp = 100; // Replace with the actual maximum experience
@@ -80,7 +75,6 @@ function startGame() {
   hoard = [];
   bullets = [];
   expPoints = [];
-  medkits = [];
   mouse = { x: 0, y: 0 };
   keys = {};
   if (shootingInterval1) clearInterval(shootingInterval1);
@@ -280,7 +274,6 @@ function gameLoop() {
           j--;
           // Drop exp and/or items
           expPoints.push({ x: zombie.x, y: zombie.y });
-          if (Math.random() < SPAWN_MEDKIT_RATE) medkits.push({ x: zombie.x, y: zombie.y });
           // Increase player's kills
           player.kills++;
         } else {
@@ -310,25 +303,6 @@ function gameLoop() {
       player.exp += 10;
       // Remove experience point
       expPoints.splice(i, 1);
-      i--;
-    }
-  } 
-
-  // Pick up items
-  for (let i = 0; i < medkits.length; i++) {
-    let medkit = medkits[i];
-  
-    // Draw the medkit
-    ctx.drawImage(medkitImage, medkit.x - 5, medkit.y - 5, 40, 40);
-  
-    // Check for medkit collision with player
-    let dx = player.x - medkit.x;
-    let dy = player.y - medkit.y;
-    let distance = Math.sqrt(dx * dx + dy * dy);
-    if (distance < player.radius + 50) {
-      // Player picked up the medkit
-      player.hp += 50; // Increase player's health
-      medkits.splice(i, 1);
       i--;
     }
   } 
