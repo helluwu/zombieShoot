@@ -25,6 +25,8 @@ let shootingInterval;
 let medkits = [];
 let speedBoosts = [];
 let fireRateBoosts = [];
+let killCount = 0;
+
 
 // CONSTANTS
 let MAX_FIRE_RATE = 250;
@@ -191,6 +193,8 @@ if (distance < player.radius + zombie.radius) { // Assuming player and zombie ha
         // Show the restart button
         over.style.display = 'block';
         restartButton.style.display = 'block';
+        restartButton.innerHTML = 'Restart Game (' + killCount + ' Kills)';
+
         gameStarted = false;
     
         return;
@@ -227,6 +231,7 @@ ctx.drawImage(zombieImage, zombie.x, zombie.y, 120, 100);
       if (distance < 15) {
         zombie.hp -= player.dmg;
         if (zombie.hp <= 0) {
+          killCount++;
           hoard.splice(j, 1);
           j--; 
           // Drop exp and/or items
