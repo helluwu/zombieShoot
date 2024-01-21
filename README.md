@@ -1,4 +1,4 @@
-# BUNNYTOWN (ConUHacks 2024 Winner)
+# BUNNYTOWN (ConUHacks 2024 BEENOX Top project!)
 Your task is to save BunnyTown from the bad zombies!
 Please save us! - residents of BunnyTown
 
