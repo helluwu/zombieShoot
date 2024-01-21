@@ -62,10 +62,34 @@ html, body {
   letter-spacing: 10px;
 }
 
-#restartButton, #startButton {
+#restartButton{
   margin-top: 20px;
   position: absolute;
   top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #dd70b5;
+  border-radius: 100px;
+  box-shadow: rgba(255, 102, 102, 0.2) 0 -25px 18px -14px inset,rgba(255, 102, 102, .15) 0 1px 2px,rgba(255, 102, 102, .15) 0 2px 4px,rgba(255, 102, 102, .15) 0 4px 8px,rgba(255, 102, 102, .15) 0 8px 16px,rgba(255, 102, 102, .15) 0 16px 32px;
+  color: rgb(126, 0, 128);
+  cursor: pointer;
+  display: inline-block;
+  font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
+  padding: 20px 40px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 250ms;
+  border: 0;
+  font-size: 20px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+#startButton {
+  margin-top: 20px;
+  position: absolute;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: #dd70b5;
@@ -95,4 +119,3 @@ canvas {
   background-size: cover; /* You can also use values like "contain" or specific dimensions like "800px 600px" */
   background-repeat: no-repeat; /* Use "repeat" if you want your background image to repeat */
 }
-
