@@ -40,6 +40,8 @@ html, body {
   align-items: center;
   text-align: center;
   font-family: "Play", sans-serif;
+  font-size: medium;
+  font-weight: normal;
 }
 
 /*WASTED text*/
@@ -59,8 +61,6 @@ html, body {
   text-shadow: 0 0 5px rgb(218, 171, 202);
   letter-spacing: 10px;
 }
-
-
 
 #restartButton, #startButton {
   margin-top: 20px;
