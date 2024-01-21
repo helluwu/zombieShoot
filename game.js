@@ -75,56 +75,13 @@ restartButton.addEventListener('click', function() {
   document.getElementById('overlay').style.display = 'none';
 
   // Reset the game state
-  playerLives = 3;
-  zombies = [];
+  startGame();
 
   // Restart the game loop
   gameLoop();
 });
 
-
-
-let trees = []; // Array to store the tree elements
-
-
-  function createTree() {
-    // Create the 'wood' part of the tree
-    let wood = document.createElement('div');
-    wood.className = 'wood';
-    wood.style.width = '10px';
-    wood.style.height = '20px';
-    wood.style.backgroundColor = 'brown';
-    wood.style.position = 'absolute';
-
-    // Create the 'leaves' part of the tree
-    let leaves = document.createElement('div');
-    leaves.className = 'leaves';
-    leaves.style.width = '50px';
-    leaves.style.height = '50px';
-    leaves.style.backgroundColor = 'green';
-    leaves.style.position = 'absolute';
-
-    // Position the tree at a random location within the viewport
-    let x = Math.random() * window.innerWidth;
-    let y = Math.random() * window.innerHeight;
-    wood.style.left = x + 'px';
-    wood.style.top = (y + 50) + 'px'; // Position the wood 50px below the leaves
-    leaves.style.left = (x - 20) + 'px'; // Center the leaves over the wood
-    leaves.style.top = y + 'px';
-
-    // Append the 'wood' and 'leaves' to the body
-    document.body.appendChild(wood);
-    document.body.appendChild(leaves);
-
-    trees.push({wood, leaves});
-}
-
-// Create 10 trees
-for (let i = 0; i < 10; i++) {
-    createTree();
-}
-
-
+// Game loop
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -145,10 +102,10 @@ function gameLoop() {
   let barHeight = 5;
   let x = player.x - barWidth / 2;
   let y = player.y - player.radius - 10; 
-  ctx.fillStyle = 'red';
+  ctx.fillStyle = 'rgb(255, 0, 0)';
   ctx.fillRect(x, y, barWidth, barHeight);
   let healthPercent = player.hp / player.maxHp;
-  ctx.fillStyle = 'green';
+  ctx.fillStyle = 'rgb(0, 255, 0)'; 
   ctx.fillRect(x, y, barWidth * healthPercent, barHeight);
 
   // Create new zombies
