@@ -21,8 +21,7 @@ let bullets;
 let expPoints;
 let mouse;
 let keys;
-let shootingInterval1;
-let shootingInterval2
+let shootingInterval;
 let medkits = [];
 let killCount = 0;
 
@@ -66,13 +65,12 @@ function startGame() {
     fireRate: 0.25,
     dmg: 10,
     exp: 0,
-    kills: 0,
     speed: 2.5,
     radius: 10,
   };
   zombie = {
     hp: 9,
-    maxHp: 9,
+    maxHp: 10,
     speed: 1.5,
     radius: 10,
   }
@@ -86,7 +84,9 @@ function startGame() {
   if (shootingInterval1) clearInterval(shootingInterval1);
   if (shootingInterval2) clearInterval(shootingInterval2);
   updateFireRate1(player.fireRate);
+
 }
+startGame();
 
 //movement control and shooting control
 window.addEventListener('keydown', function (e) {
@@ -123,6 +123,7 @@ zombieImage.src = 'imgs/zombie.png';
 let xpImage = new Image();
 xpImage.src = 'imgs/bullet.png';
 
+
 function updateFireRate1(newFireRate) {
   player.fireRate = newFireRate;
   // Clear the old interval
@@ -140,7 +141,8 @@ startGame();
 
 function gameLoop() {
 
-  if (!gameStarted) return;
+    function gameLoop() {
+        if (!gameStarted) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -151,6 +153,7 @@ function gameLoop() {
   if ((keys['d'] || keys['D']) && player.x + player.speed < canvas.width) player.x += player.speed;
   // Update player hp (regen)
   if (player.hp < player.maxHp) player.hp += player.hpRegen;
+
   // Update player fire rate every 10 kills
   if (player.fireRate < MAX_FIRE_RATE && player.kills % 11 == 10) {
     player.kills++;
@@ -172,8 +175,9 @@ function gameLoop() {
     player.exp +=10;
   }
 
-  // Update zombie stats every
-  if (zombie.maxHp < MAX_ZOMBIE_HP) zombie.maxHp += 0.0005;
+  // Update zombie stats
+  console.log(zombie.hp, zombie.speed, zombieSpawnRate)
+  if (zombie.hp < MAX_ZOMBIE_HP) zombie.hp += 0.0005;
   if (zombie.speed < MAX_ZOMBIE_SPEED) zombie.speed += 0.00001;
   if (zombieSpawnRate < MAX_ZOMBIE_SPAWN_RATE) zombieSpawnRate += 0.000001;
 
@@ -208,15 +212,15 @@ function gameLoop() {
     hoard.push(z);
   }
 
-  // ZOMBIES DRAW & UPDATE ====================================================
+  // Move and draw zombies
   for (let i = 0; i < hoard.length; i++) {
     let zombie = hoard[i];
     let angle = Math.atan2(player.y - zombie.y, player.x - zombie.x);
     zombie.x += Math.cos(angle) * zombie.speed;
     zombie.y += Math.sin(angle) * zombie.speed;
 
-    // Add collision detection with player
-    let dx = (player.x + 5) - zombie.x;
+  // Add collision detection with player
+  let dx = (player.x + 5) - zombie.x;
     let dy = (player.y + 1) - zombie.y;
     let distance = Math.sqrt(dx * dx + dy * dy);
 
@@ -227,6 +231,7 @@ function gameLoop() {
         document.getElementById('overlay').style.display = 'block';
         over.style.display = 'block';
         restartButton.style.display = 'block';
+        restartButton.innerHTML = 'Restart Game (' + killCount + ' Kills)';
         gameStarted = false;
         return;
       }
@@ -239,6 +244,10 @@ function gameLoop() {
       ctx.fillStyle = 'red';
       ctx.fillRect(zombie.x - barWidth / 2, zombie.y - 60, barWidth * healthPercent, barHeight);
     }
+}
+
+ctx.drawImage(zombieImage, zombie.x, zombie.y, 120, 100);
+
   }
 
   // Move and draw bullets
@@ -272,7 +281,7 @@ function gameLoop() {
       let dy = bullet.y - zombie.y;
       let distance = Math.sqrt(dx * dx + dy * dy);
 
-      if (distance < bullet.size * 1.2 + zombie.radius) {
+      if (distance < 15) {
         zombie.hp -= player.dmg;
         if (zombie.hp <= 0) {
           killCount++;
@@ -293,7 +302,6 @@ function gameLoop() {
         }
       }
     }
-  }
 
   // Draw experience points
   for (let i = 0; i < expPoints.length; i++) {
@@ -311,6 +319,7 @@ function gameLoop() {
       // Remove experience point
       expPoints.splice(i, 1);
       i--;
+
     }
   } 
 
@@ -348,3 +357,4 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 gameLoop();
+}
