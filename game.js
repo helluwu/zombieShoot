@@ -44,6 +44,8 @@ let restartButton = document.getElementById('restartButton');
 restartButton.addEventListener('click', function() {
   // Hide the restart button
   restartButton.style.display = 'none';
+  over.style.display = 'none';
+  document.getElementById('overlay').style.display = 'none';
 
   // Reset the game state
   playerLives = 3;
@@ -86,21 +88,19 @@ function gameLoop() {
   let dy = player.y - zombie.y;
   let distance = Math.sqrt(dx * dx + dy * dy);
 
-  if (distance < player.radius + zombie.radius) { // Assuming player and zombie have a 'radius' property
+if (distance < player.radius + zombie.radius) { // Assuming player and zombie have a 'radius' property
     playerLives--;
     if (playerLives <= 0) {
-      // End the game, replace this with your game over logic
-    ctx.font = "30px Arial";
-    ctx.fillStyle = "red";
-    ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2);
+        // End the game
+        document.getElementById('overlay').style.display = 'block';
+        
+        // Show the restart button
+        over.style.display = 'block';
+        restartButton.style.display = 'block';
     
-    // Show the restart button
-  restartButton.style.display = 'block';
-  
-  return;
+        return;
     }
-    
-  }
+}
 
     ctx.beginPath();
     ctx.arc(zombie.x, zombie.y, 10, 0, Math.PI * 2);
