@@ -37,8 +37,14 @@ let SPAWN_MEDKIT_RATE = 0.01;
 let SPAWN_SPEED_BOOST_RATE = 0.01;
 let SPAWN_FIRE_RATE_BOOST_RATE = 0.01;
 
-// Start the game
+// xp bar variables
+let maxExp = 100; // Replace with the actual maximum experience
+let expBarWidth = 200; // Width of the experience bar
+let expBarHeight = 20; // Height of the experience bar
+let expBarX = canvas.width - expBarWidth - 10; // 10px from the right edge of the canvas
+let expBarY = 10; // 10px from the top of the canvas
 
+// Start the game
 let menu = document.getElementById('menu');
 let startButton = document.getElementById('startButton');
 
@@ -117,6 +123,9 @@ playerImage.src = 'imgs/lvl1.png';
 
 let zombieImage = new Image();
 zombieImage.src = 'imgs/zombie.png';
+
+let xpImage = new Image();
+xpImage.src = 'imgs/bullet.png';
 
 function gameLoop() {
 
@@ -248,10 +257,8 @@ ctx.drawImage(zombieImage, zombie.x, zombie.y, 120, 100);
     for (let i = 0; i < expPoints.length; i++) {
       let xp = expPoints[i];
       // Draw experience point
-      ctx.beginPath();
-      ctx.arc(xp.x, xp.y, 5, 0, Math.PI * 2);
-      ctx.fillStyle = 'yellow';
-      ctx.fill();
+
+      ctx.drawImage(xpImage, xp.x - 5, xp.y - 5, 40, 40);
 
       // Check for collision with player
       let dx = player.x - xp.x;
@@ -266,6 +273,19 @@ ctx.drawImage(zombieImage, zombie.x, zombie.y, 120, 100);
       }
     }
   }
+
+  // Draw the border of the experience bar
+ctx.fillStyle = 'black';
+ctx.fillRect(expBarX - 1, expBarY - 1, expBarWidth + 2, expBarHeight + 2);
+
+  // Draw the background of the experience bar
+ctx.fillStyle = 'gray';
+ctx.fillRect(expBarX, expBarY, expBarWidth, expBarHeight);
+
+// Draw the current experience
+let currentExpWidth = (player.exp / maxExp) * expBarWidth;
+ctx.fillStyle = 'yellow';
+ctx.fillRect(expBarX, expBarY, currentExpWidth, expBarHeight);
   requestAnimationFrame(gameLoop);
 }
 gameLoop();
