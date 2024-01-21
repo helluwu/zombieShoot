@@ -24,6 +24,16 @@ let shootingInterval;
 let MAX_FIRE_RATE = 300;
 
 // Start the game
+
+let menu = document.getElementById('menu');
+let startButton = document.getElementById('startButton');
+
+startButton.addEventListener('click', function() {
+  menu.style.display = 'none';
+  gameStarted = true;
+  gameLoop();
+});
+
 function startGame () {
   gameStarted = true;
   player = {
@@ -33,12 +43,12 @@ function startGame () {
     maxHp: 100,
     hpRegen: 0.01,
     fireRate: 0.25,
-    speed: 1.2,
+    speed: 2.5,
     radius: 10,
   };
   zombie = { 
     hp: 100,
-    speed: 1,
+    speed: 1.5,
     radius: 10,
   }
   zombieSpawnRate = 0.01;
@@ -49,7 +59,7 @@ function startGame () {
   if (shootingInterval) clearInterval(shootingInterval);
   shootingInterval = setInterval(() => {
     if (gameStarted) {
-      bullets.push({ x: player.x, y: player.y, speed: 5, angle: Math.atan2(mouse.y - player.y, mouse.x - player.x) });
+      bullets.push({ x: player.x, y: player.y, speed: 6, angle: Math.atan2(mouse.y - player.y, mouse.x - player.x) });
     }
   }, MAX_FIRE_RATE / player.fireRate);
 }
@@ -81,8 +91,18 @@ restartButton.addEventListener('click', function() {
   gameLoop();
 });
 
+let playerImage = new Image();
+playerImage.src = 'imgs/lvl1.png'; 
+
+let zombieImage = new Image();
+zombieImage.src = 'imgs/zombie.png';
+
 // Game loop
 function gameLoop() {
+
+    function gameLoop() {
+        if (!gameStarted) return;
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Update player movement
@@ -94,9 +114,8 @@ function gameLoop() {
   if (player.hp < player.maxHp) player.hp += player.hpRegen;
 
   // Draw player
-  ctx.beginPath();
-  ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.drawImage(playerImage, player.x - 45, player.y-10, 120, 100);
+
   // Draw player hp bar
   let barWidth = 50;
   let barHeight = 5;
@@ -125,8 +144,8 @@ function gameLoop() {
     zombie.y += Math.sin(angle) * zombie.speed;
 
   // Add collision detection with player
-  let dx = player.x - zombie.x;
-  let dy = player.y - zombie.y;
+  let dx = (player.x + 5) - zombie.x;
+    let dy = (player.y + 1) - zombie.y;
   let distance = Math.sqrt(dx * dx + dy * dy);
 
 if (distance < player.radius + zombie.radius) { // Assuming player and zombie have a 'radius' property
@@ -144,10 +163,8 @@ if (distance < player.radius + zombie.radius) { // Assuming player and zombie ha
     }
 }
 
-    ctx.beginPath();
-    ctx.arc(zombie.x, zombie.y, 10, 0, Math.PI * 2);
-    ctx.fillStyle = 'red';
-    ctx.fill();
+ctx.drawImage(zombieImage, zombie.x, zombie.y, 120, 100);
+
   }
 
   // Move and draw bullets
@@ -162,7 +179,7 @@ if (distance < player.radius + zombie.radius) { // Assuming player and zombie ha
       continue;
     }
     ctx.beginPath();
-    ctx.arc(bullet.x, bullet.y, 5, 0, Math.PI * 2);
+    ctx.arc(bullet.x +70, bullet.y + 35, 5, 0, Math.PI * 2);
     ctx.fillStyle = 'black';
     ctx.fill();
 
@@ -183,3 +200,4 @@ if (distance < player.radius + zombie.radius) { // Assuming player and zombie ha
   requestAnimationFrame(gameLoop);
 }
 gameLoop();
+}
