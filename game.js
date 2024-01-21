@@ -22,8 +22,8 @@ let expPoints;
 let mouse;
 let keys;
 let shootingInterval1;
-let shootingInterval2
-let medkits = [];
+let shootingInterval2;
+let medkits;
 let killCount = 0;
 
 
