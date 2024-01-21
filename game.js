@@ -26,6 +26,8 @@ let shootingInterval2
 let medkits = [];
 let speedBoosts = [];
 let fireRateBoosts = [];
+let killCount = 0;
+
 
 // CONSTANTS
 let MAX_FIRE_RATE = 250;
@@ -38,8 +40,14 @@ let SPAWN_MEDKIT_RATE = 0.01;
 let SPAWN_SPEED_BOOST_RATE = 0.01;
 let SPAWN_FIRE_RATE_BOOST_RATE = 0.01;
 
-// Start the game
+// xp bar variables
+let maxExp = 100; // Replace with the actual maximum experience
+let expBarWidth = 200; // Width of the experience bar
+let expBarHeight = 20; // Height of the experience bar
+let expBarX = canvas.width - expBarWidth - 10; // 10px from the right edge of the canvas
+let expBarY = 10; // 10px from the top of the canvas
 
+// Start the game
 let menu = document.getElementById('menu');
 let startButton = document.getElementById('startButton');
 
@@ -114,6 +122,9 @@ playerImage.src = 'imgs/lvl1.png';
 let zombieImage = new Image();
 zombieImage.src = 'imgs/zombie.png';
 
+let xpImage = new Image();
+xpImage.src = 'imgs/bullet.png';
+
 function updateFireRate1(newFireRate) {
   player.fireRate = newFireRate;
   // Clear the old interval
@@ -128,6 +139,7 @@ function updateFireRate1(newFireRate) {
 }
 
 startGame();
+
 function gameLoop() {
 
   if (!gameStarted) return;
@@ -209,7 +221,7 @@ function gameLoop() {
     let dy = (player.y + 1) - zombie.y;
     let distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance < player.radius + zombie.radius) { // Assuming player and zombie have a 'radius' property
+    if (distance < player.radius + zombie.radius) { 
         player.hp--;
         if (player.hp <= 0) {
             // End the game
@@ -256,6 +268,7 @@ function gameLoop() {
       if (distance < bullet.size * 1.2 + zombie.radius) {
         zombie.hp -= player.dmg;
         if (zombie.hp <= 0) {
+          killCount++;
           hoard.splice(j, 1);
           j--; 
           // Drop exp and/or items
@@ -281,16 +294,13 @@ function gameLoop() {
   for (let i = 0; i < expPoints.length; i++) {
     let xp = expPoints[i];
     // Draw experience point
-    ctx.beginPath();
-    ctx.arc(xp.x, xp.y, 5, 0, Math.PI * 2);
-    ctx.fillStyle = 'yellow';
-    ctx.fill();
+    ctx.drawImage(xpImage, xp.x - 5, xp.y - 5, 40, 40);
 
     // Check for collision with player
     let dx = player.x - xp.x;
     let dy = player.y - xp.y;
     let distance = Math.sqrt(dx * dx + dy * dy);
-    if (distance < player.radius + 50) {
+    if (distance < player.radius + 5) {
       // Increase player's experience
       player.exp += 10;
       // Remove experience point
@@ -298,6 +308,19 @@ function gameLoop() {
       i--;
     }
   }
+
+  // Draw the border of the experience bar
+ctx.fillStyle = 'black';
+ctx.fillRect(expBarX - 1, expBarY - 1, expBarWidth + 2, expBarHeight + 2);
+
+  // Draw the background of the experience bar
+ctx.fillStyle = 'gray';
+ctx.fillRect(expBarX, expBarY, expBarWidth, expBarHeight);
+
+// Draw the current experience
+let currentExpWidth = (player.exp / maxExp) * expBarWidth;
+ctx.fillStyle = 'yellow';
+ctx.fillRect(expBarX, expBarY, currentExpWidth, expBarHeight);
   requestAnimationFrame(gameLoop);
 }
 gameLoop();
