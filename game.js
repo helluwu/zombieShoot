@@ -21,7 +21,8 @@ let bullets;
 let expPoints;
 let mouse;
 let keys;
-let shootingInterval;
+let shootingInterval1;
+let shootingInterval2
 let medkits = [];
 let speedBoosts = [];
 let fireRateBoosts = [];
@@ -59,12 +60,13 @@ function startGame () {
     fireRate: 0.25,
     dmg: 10,
     exp: 0,
+    kills: 0,
     speed: 2.5,
     radius: 10,
   };
   zombie = { 
     hp: 9,
-    maxHp: 10,
+    maxHp: 9,
     speed: 1.5,
     radius: 10,
   }
@@ -77,14 +79,8 @@ function startGame () {
   fireRateBoosts = [];
   mouse = { x: 0, y: 0 };
   keys = {};
-  if (shootingInterval) clearInterval(shootingInterval);
-  shootingInterval = setInterval(() => {
-    if (gameStarted) {
-      bullets.push({ x: player.x, y: player.y, speed: 6, angle: Math.atan2(mouse.y - player.y, mouse.x - player.x) });
-    }
-  }, MAX_FIRE_RATE / player.fireRate);
+  updateFireRate1(player.fireRate);
 }
-startGame();
 
 //movement control and shooting control
 window.addEventListener('keydown', function(e) {
@@ -118,10 +114,23 @@ playerImage.src = 'imgs/lvl1.png';
 let zombieImage = new Image();
 zombieImage.src = 'imgs/zombie.png';
 
+function updateFireRate1(newFireRate) {
+  player.fireRate = newFireRate;
+  // Clear the old interval
+  if (shootingInterval1) clearInterval(shootingInterval1);
+
+  // Set a new interval with the updated fire rate
+  shootingInterval1 = setInterval(() => {
+    if (gameStarted) {
+      bullets.push({ id:1, x: player.x, y: player.y, speed: 6, angle: Math.atan2(mouse.y - player.y, mouse.x - player.x), size: 10 });
+    }
+  }, MAX_FIRE_RATE / player.fireRate);
+}
+
+startGame();
 function gameLoop() {
 
-    function gameLoop() {
-        if (!gameStarted) return;
+  if (!gameStarted) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -132,10 +141,28 @@ function gameLoop() {
   if ((keys['d'] || keys['D']) && player.x + player.speed < canvas.width) player.x += player.speed;
   // Update player hp (regen)
   if (player.hp < player.maxHp) player.hp += player.hpRegen;
+  // Update player fire rate every 10 kills
+  if (player.fireRate < MAX_FIRE_RATE && player.kills % 11 == 10) {
+    player.kills++;
+    updateFireRate1(player.fireRate + 0.5);
+  }
+  // New weapon 2 : Bazooka
+  if (player.exp == 100) {
+    if (shootingInterval2) clearInterval(shootingInterval2);
+      shootingInterval2 = setInterval(() => {
+        if (gameStarted) {
+          bullets.push({ id: 2, x: player.x, y: player.y, speed: 3, angle: Math.atan2(mouse.y - player.y, mouse.x - player.x), size: 50 });
+        }
+      }, MAX_FIRE_RATE / player.fireRate * 3);
+    player.exp += 10;
+  }
+  // New weapon 3 : orbiting bullets
+  if (player.exp == 1000) {
 
-  // Update zombie stats
-  console.log(zombie.hp, zombie.speed, zombieSpawnRate)
-  if (zombie.hp < MAX_ZOMBIE_HP) zombie.hp += 0.0005;
+  }
+
+  // Update zombie stats every
+  if (zombie.maxHp < MAX_ZOMBIE_HP) zombie.maxHp += 0.0005;
   if (zombie.speed < MAX_ZOMBIE_SPEED) zombie.speed += 0.00001;
   if (zombieSpawnRate < MAX_ZOMBIE_SPAWN_RATE) zombieSpawnRate += 0.000001;
 
@@ -170,35 +197,37 @@ function gameLoop() {
     hoard.push(z);
   }
 
-  // Move and draw zombies
+  // ZOMBIES DRAW & UPDATE ====================================================
   for (let i = 0; i < hoard.length; i++) {
     let zombie = hoard[i];
     let angle = Math.atan2(player.y - zombie.y, player.x - zombie.x);
     zombie.x += Math.cos(angle) * zombie.speed;
     zombie.y += Math.sin(angle) * zombie.speed;
 
-  // Add collision detection with player
-  let dx = (player.x + 5) - zombie.x;
+    // Add collision detection with player
+    let dx = (player.x + 5) - zombie.x;
     let dy = (player.y + 1) - zombie.y;
-  let distance = Math.sqrt(dx * dx + dy * dy);
+    let distance = Math.sqrt(dx * dx + dy * dy);
 
-if (distance < player.radius + zombie.radius) { // Assuming player and zombie have a 'radius' property
-    player.hp--;
-    if (player.hp <= 0) {
-        // End the game
-        document.getElementById('overlay').style.display = 'block';
-        
-        // Show the restart button
-        over.style.display = 'block';
-        restartButton.style.display = 'block';
-        gameStarted = false;
-    
-        return;
+    if (distance < player.radius + zombie.radius) { // Assuming player and zombie have a 'radius' property
+        player.hp--;
+        if (player.hp <= 0) {
+            // End the game
+            document.getElementById('overlay').style.display = 'block';
+            over.style.display = 'block';
+            restartButton.style.display = 'block';
+            gameStarted = false;
+            return;
+        }
     }
-}
-
-ctx.drawImage(zombieImage, zombie.x, zombie.y, 120, 100);
-
+    ctx.drawImage(zombieImage, zombie.x, zombie.y, 120, 100);
+    if (zombie.hp < zombie.maxHp) {
+      let barWidth = 50; 
+      let barHeight = 5;
+      let healthPercent = zombie.hp / zombie.maxHp;
+      ctx.fillStyle = 'red';
+      ctx.fillRect(zombie.x - barWidth / 2, zombie.y - 60, barWidth * healthPercent, barHeight);
+    }
   }
 
   // Move and draw bullets
@@ -213,7 +242,7 @@ ctx.drawImage(zombieImage, zombie.x, zombie.y, 120, 100);
       continue;
     }
     ctx.beginPath();
-    ctx.arc(bullet.x +70, bullet.y + 35, 5, 0, Math.PI * 2);
+    ctx.arc(bullet.x +70, bullet.y + 35, bullet.size, 0, Math.PI * 2 );
     ctx.fillStyle = 'black';
     ctx.fill();
 
@@ -224,7 +253,7 @@ ctx.drawImage(zombieImage, zombie.x, zombie.y, 120, 100);
       let dy = bullet.y - zombie.y;
       let distance = Math.sqrt(dx * dx + dy * dy);
 
-      if (distance < 15) {
+      if (distance < bullet.size * 1.2 + zombie.radius) {
         zombie.hp -= player.dmg;
         if (zombie.hp <= 0) {
           hoard.splice(j, 1);
@@ -234,39 +263,41 @@ ctx.drawImage(zombieImage, zombie.x, zombie.y, 120, 100);
           if (Math.random() < SPAWN_MEDKIT_RATE) medkits.push({ x: zombie.x, y: zombie.y });
           if (Math.random() < SPAWN_SPEED_BOOST_RATE) speedBoosts.push({ x: zombie.x, y: zombie.y });
           if (Math.random() < SPAWN_FIRE_RATE_BOOST_RATE) fireRateBoosts.push({ x: zombie.x, y: zombie.y });
-
+          // Increase player's kills
+          player.kills++;
         } else { 
           hoard[j] = zombie;
         }
-        
-        bullets.splice(i, 1);
-        i--; 
-        break;
+        if (bullet.id == 1) {
+          bullets.splice(i, 1);
+          i--; 
+          break;
+        }
       }
     }
-    // Check for exp-player collisions
-    for (let i = 0; i < expPoints.length; i++) {
-      let xp = expPoints[i];
-      // Draw experience point
-      ctx.beginPath();
-      ctx.arc(xp.x, xp.y, 5, 0, Math.PI * 2);
-      ctx.fillStyle = 'yellow';
-      ctx.fill();
+  }
 
-      // Check for collision with player
-      let dx = player.x - xp.x;
-      let dy = player.y - xp.y;
-      let distance = Math.sqrt(dx * dx + dy * dy);
-      if (distance < player.radius + 5) {
-        // Increase player's experience
-        player.exp += 10;
-        // Remove experience point
-        expPoints.splice(i, 1);
-        i--;
-      }
+  // Draw experience points
+  for (let i = 0; i < expPoints.length; i++) {
+    let xp = expPoints[i];
+    // Draw experience point
+    ctx.beginPath();
+    ctx.arc(xp.x, xp.y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = 'yellow';
+    ctx.fill();
+
+    // Check for collision with player
+    let dx = player.x - xp.x;
+    let dy = player.y - xp.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance < player.radius + 50) {
+      // Increase player's experience
+      player.exp += 10;
+      // Remove experience point
+      expPoints.splice(i, 1);
+      i--;
     }
   }
   requestAnimationFrame(gameLoop);
 }
 gameLoop();
-}
