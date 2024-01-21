@@ -18,10 +18,24 @@ let zombie;
 let zombieSpawnRate;
 let hoard;
 let bullets;
+let expPoints;
 let mouse;
 let keys;
 let shootingInterval;
-let MAX_FIRE_RATE = 300;
+let medkits = [];
+let speedBoosts = [];
+let fireRateBoosts = [];
+
+// CONSTANTS
+let MAX_FIRE_RATE = 250;
+
+let MAX_ZOMBIE_SPAWN_RATE = 0.05;
+let MAX_ZOMBIE_SPEED = 2;
+let MAX_ZOMBIE_HP = 100;
+
+let SPAWN_MEDKIT_RATE = 0.01;
+let SPAWN_SPEED_BOOST_RATE = 0.01;
+let SPAWN_FIRE_RATE_BOOST_RATE = 0.01;
 
 // Start the game
 function startGame () {
@@ -33,17 +47,24 @@ function startGame () {
     maxHp: 100,
     hpRegen: 0.01,
     fireRate: 0.25,
+    dmg: 10,
+    exp: 0,
     speed: 1.2,
     radius: 10,
   };
   zombie = { 
-    hp: 100,
+    hp: 9,
+    maxHp: 10,
     speed: 1,
     radius: 10,
   }
-  zombieSpawnRate = 0.01;
+  zombieSpawnRate = 0.005;
   hoard = [];
   bullets = [];
+  expPoints = [];
+  medkits = [];
+  speedBoosts = [];
+  fireRateBoosts = [];
   mouse = { x: 0, y: 0 };
   keys = {};
   if (shootingInterval) clearInterval(shootingInterval);
@@ -76,6 +97,7 @@ restartButton.addEventListener('click', function() {
   gameLoop();
 });
 
+<<<<<<< HEAD
 
 
 let trees = []; // Array to store the tree elements
@@ -119,6 +141,9 @@ for (let i = 0; i < 10; i++) {
 }
 
 
+=======
+// Game Tick
+>>>>>>> 3a6ea9e (exp)
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -129,6 +154,12 @@ function gameLoop() {
   if ((keys['d'] || keys['D']) && player.x + player.speed < canvas.width) player.x += player.speed;
   // Update player hp (regen)
   if (player.hp < player.maxHp) player.hp += player.hpRegen;
+
+  // Update zombie stats
+  console.log(zombie.hp, zombie.speed, zombieSpawnRate)
+  if (zombie.hp < MAX_ZOMBIE_HP) zombie.hp += 0.0005;
+  if (zombie.speed < MAX_ZOMBIE_SPEED) zombie.speed += 0.00001;
+  if (zombieSpawnRate < MAX_ZOMBIE_SPAWN_RATE) zombieSpawnRate += 0.000001;
 
   // Draw player
   ctx.beginPath();
@@ -151,7 +182,19 @@ function gameLoop() {
     let distance = 500; // Distance from the player
     let x = player.x + Math.cos(angle) * distance;
     let y = player.y + Math.sin(angle) * distance;
+<<<<<<< HEAD
     hoard.push({ x: x, y: y, speed: 1, radius: 10});
+=======
+    let z = {
+      x: x,
+      y: y,
+      hp: zombie.hp,
+      maxHp: zombie.maxHp,
+      speed: zombie.speed,
+      radius: zombie.radius,
+    }
+    hoard.push(z);
+>>>>>>> 3a6ea9e (exp)
   }
 
   // Move and draw zombies
@@ -209,10 +252,45 @@ function gameLoop() {
       let dy = bullet.y - zombie.y;
       let distance = Math.sqrt(dx * dx + dy * dy);
 
-      if (distance < 10 + 5) {
-        hoard.splice(j, 1);
+      if (distance < 15) {
+        zombie.hp -= player.dmg;
+        if (zombie.hp <= 0) {
+          hoard.splice(j, 1);
+          j--; 
+          // Drop exp and/or items
+          expPoints.push({ x: zombie.x, y: zombie.y });
+          if (Math.random() < SPAWN_MEDKIT_RATE) medkits.push({ x: zombie.x, y: zombie.y });
+          if (Math.random() < SPAWN_SPEED_BOOST_RATE) speedBoosts.push({ x: zombie.x, y: zombie.y });
+          if (Math.random() < SPAWN_FIRE_RATE_BOOST_RATE) fireRateBoosts.push({ x: zombie.x, y: zombie.y });
+
+        } else { 
+          hoard[j] = zombie;
+        }
+        
         bullets.splice(i, 1);
+        i--; 
         break;
+      }
+    }
+    // Check for exp-player collisions
+    for (let i = 0; i < expPoints.length; i++) {
+      let xp = expPoints[i];
+      // Draw experience point
+      ctx.beginPath();
+      ctx.arc(xp.x, xp.y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = 'yellow';
+      ctx.fill();
+
+      // Check for collision with player
+      let dx = player.x - xp.x;
+      let dy = player.y - xp.y;
+      let distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < player.radius + 5) {
+        // Increase player's experience
+        player.exp += 10;
+        // Remove experience point
+        expPoints.splice(i, 1);
+        i--;
       }
     }
   }
