@@ -225,7 +225,7 @@ function gameLoop() {
         return;
       }
     }
-    ctx.drawImage(zombieImage, zombie.x, zombie.y, 120, 100);
+    ctx.drawImage(zombieImage, zombie.x - 50, zombie.y-70, 120, 100);
     if (zombie.hp < zombie.maxHp) {
       let barWidth = 50;
       let barHeight = 5;
